@@ -12,6 +12,8 @@ def border_radius_mask(size, r_all, r_ne_sw=None, r_se=None, r_sw=None):
     im = Image.new('L', size, 255)
     ref = Image.open('border_radius.2048.png')
 
+    corners_cache = {}
+
     for r, transpose, offset_x, offset_y in [
         (r_all, None, 0, 0),
         (r_ne_sw, Image.FLIP_LEFT_RIGHT, 1, 0),
@@ -20,7 +22,10 @@ def border_radius_mask(size, r_all, r_ne_sw=None, r_se=None, r_sw=None):
     ]:
         if r == 0:
             continue
-        corner = ref.resize((r, r), Image.HAMMING)
+        corner = corners_cache.get((r, r))
+        if corner is None:
+            corner = ref.resize((r, r), Image.HAMMING)
+            corners_cache[(r, r)] = corner
         if transpose is not None:
             corner = corner.transpose(transpose)
         im.paste(corner, ((size[0] - r) * offset_x, (size[1] - r) * offset_y))
