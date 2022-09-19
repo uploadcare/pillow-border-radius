@@ -1,11 +1,11 @@
 import os.path
 
-from border_radius import border_radius_mask, Image
+from border_radius import border_radius_args, border_radius_mask, Image
 
 import pytest
 
 
-@pytest.mark.parametrize("size, radius, vertical_radius", [
+@pytest.mark.parametrize("size, radius, vert_radius", [
     ((60, 40), (10,), None),
     ((60, 40), (10, 12), None),
     ((60, 40), (10, 12, 14), None),
@@ -15,7 +15,7 @@ import pytest
     ((60, 40), (10, 12, 14), (20,)),
     ((60, 40), (10, 12, 14, 16), (20,)),
 ])
-def test_referential(size, radius, vertical_radius):
+def test_referential(size, radius, vert_radius):
     def collect_args(radius):
         fn_args = []
         for arg in radius:
@@ -23,12 +23,12 @@ def test_referential(size, radius, vertical_radius):
         return ",".join(fn_args)
 
     out_args = collect_args(radius)
-    if vertical_radius is not None:
-        out_args += "_" + collect_args(vertical_radius)
+    if vert_radius is not None:
+        out_args += "_" + collect_args(vert_radius)
 
     out_file = f"./test_refs/mask_{size[0]}x{size[1]}_{out_args}.png"
 
-    mask = border_radius_mask(size, radius, vertical_radius)
+    mask = border_radius_mask(size, radius, vert_radius)
 
     if not os.path.exists(out_file):
         mask.save(out_file, optimize=True)
@@ -39,3 +39,20 @@ def test_referential(size, radius, vertical_radius):
         os.rename(out_file, '{}.__fail__{}'.format(*os.path.splitext(out_file)))
         mask.save(out_file, optimize=True)
         raise AssertionError("processed doesn't match with reference")
+
+
+@pytest.mark.parametrize("expected, size, radius, vert_radius", [
+    ([(10, 10), (10, 10), (10, 10), (10, 10)], (60, 40), 10, None),
+    ([(10, 10), (10, 10), (10, 10), (10, 10)], (60, 40), (10,), None),
+    ([(10, 10), (12, 12), (10, 10), (12, 12)], (60, 40), (10, 12), None),
+    ([(10, 10), (12, 12), (14, 14), (12, 12)], (60, 40), (10, 12, 14), None),
+    ([(10, 10), (12, 12), (14, 14), (16, 16)], (60, 40), (10, 12, 14, 16), None),
+    ([(10, 20), (10, 18), (10, 16), (10, 14)], (60, 40), (10,), (20, 18, 16, 14)),
+    ([(10, 20), (12, 18), (10, 16), (12, 18)], (60, 40), (10, 12), (20, 18, 16)),
+    ([(10, 20), (12, 18), (14, 20), (12, 18)], (60, 40), (10, 12, 14), (20, 18)),
+    ([(10, 20), (12, 20), (14, 20), (16, 20)], (60, 40), (10, 12, 14, 16), (20,)),
+    ([(10, 20), (12, 20), (14, 20), (16, 20)], (60, 40), (10, 12, 14, 16), 20),
+])
+def test_args(expected, size, radius, vert_radius):
+    args = border_radius_args(size, radius, vert_radius)
+    assert expected == args

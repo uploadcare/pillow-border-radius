@@ -14,9 +14,9 @@ def _init_mitmaps():
         mask_refs_mitmaps.insert(0, ref)
 
 
-def border_radius_args(size, radius, vertical_radius=None):
-    if vertical_radius is None:
-        vertical_radius = radius
+def border_radius_args(size, radius, vert_radius=None):
+    if vert_radius is None:
+        vert_radius = radius
 
     def inner(dim, radius):
         if not isinstance(radius, tuple):
@@ -34,14 +34,14 @@ def border_radius_args(size, radius, vertical_radius=None):
 
     return list(zip(
         inner(size[0], radius),
-        inner(size[1], vertical_radius)
+        inner(size[1], vert_radius)
     ))
 
 
-def border_radius_mask(size, radius, vertical_radius=None):
+def border_radius_mask(size, radius, vert_radius=None):
     _init_mitmaps()
 
-    r_nw, r_ne, r_se, r_sw = border_radius_args(size, radius, vertical_radius)
+    r_nw, r_ne, r_se, r_sw = border_radius_args(size, radius, vert_radius)
 
     im = Image.new('L', size, 255)
 
