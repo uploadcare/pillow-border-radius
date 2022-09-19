@@ -18,23 +18,36 @@ def border_radius_args(size, radius, vert_radius=None):
     if vert_radius is None:
         vert_radius = radius
 
-    def inner(dim, radius):
+    def rel_size(dim, radius):
         if not isinstance(radius, tuple):
             radius = (radius,)
 
-        r_nw, r_ne, r_se, r_sw = list(radius) + [None] * (4 - len(radius))
+        radius = list(radius) + [None] * 3
 
-        if r_ne is None:
-            r_ne = r_nw
-        if r_se is None:
-            r_se = r_nw
-        if r_sw is None:
-            r_sw = r_ne
-        return r_nw, r_ne, r_se, r_sw
+        if radius[1] is None:
+            radius[1] = radius[0]
+        if radius[2] is None:
+            radius[2] = radius[0]
+        if radius[3] is None:
+            radius[3] = radius[1]
 
+        return [
+            r / dim if isinstance(r, int) else r
+            for r in radius[:4]
+        ]
+
+    radius = rel_size(size[0], radius)
+    vert_radius = rel_size(size[1], vert_radius)
+    scale = 1.001 * max(
+        radius[0] + radius[1], radius[2] + radius[3],
+        vert_radius[0] + vert_radius[3], vert_radius[1] + vert_radius[2]
+    )
+    if scale > 1.0:
+        radius = [r / scale for r in radius]
+        vert_radius = [r / scale for r in vert_radius]
     return list(zip(
-        inner(size[0], radius),
-        inner(size[1], vert_radius)
+        (round(r * size[0]) for r in radius),
+        (round(r * size[1]) for r in vert_radius),
     ))
 
 
