@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageOps
 
 
 mask_refs_mipmaps = []
@@ -76,9 +76,16 @@ def border_radius_mask(size, radius, vert_radius=None):
             corners_cache[r] = corner
         if transpose is not None:
             corner = corner.transpose(transpose)
-        im.paste(corner, (
-            (size[0] - r[0]) * offset_x,
-            (size[1] - r[1]) * offset_y
-        ))
+        if transpose is None or (size[0] >= r[0] * 2 and size[1] >= r[1] * 2):
+            im.paste(corner, (
+                (size[0] - r[0]) * offset_x,
+                (size[1] - r[1]) * offset_y
+            ))
+        else:
+            bg = Image.new('L', r, 0)
+            im.paste(bg, (
+                (size[0] - r[0]) * offset_x,
+                (size[1] - r[1]) * offset_y
+            ), ImageOps.invert(corner))
 
     return im
