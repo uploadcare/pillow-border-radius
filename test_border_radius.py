@@ -15,6 +15,8 @@ def test_referential(size, radius, vert_radius):
     def collect_args(radius):
         fn_args = []
         for arg in radius:
+            if not isinstance(arg, int):
+                arg = round(arg * 100) + 'p'
             fn_args.append(str(arg))
         return ",".join(fn_args)
 
