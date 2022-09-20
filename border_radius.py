@@ -1,17 +1,17 @@
 from PIL import Image
 
 
-mask_refs_mitmaps = []
+mask_refs_mipmaps = []
 
 
-def _init_mitmaps():
-    if mask_refs_mitmaps:
+def _init_mipmaps():
+    if mask_refs_mipmaps:
         return
     ref = Image.open('border_radius.2048.png')
-    mask_refs_mitmaps.insert(0, ref)
+    mask_refs_mipmaps.insert(0, ref)
     while ref.width >= 4:
         ref = ref.resize((ref.width // 2, ref.height // 2), Image.HAMMING)
-        mask_refs_mitmaps.insert(0, ref)
+        mask_refs_mipmaps.insert(0, ref)
 
 
 def border_radius_args(size, radius, vert_radius=None):
@@ -52,7 +52,7 @@ def border_radius_args(size, radius, vert_radius=None):
 
 
 def border_radius_mask(size, radius, vert_radius=None):
-    _init_mitmaps()
+    _init_mipmaps()
 
     r_nw, r_ne, r_se, r_sw = border_radius_args(size, radius, vert_radius)
 
@@ -70,8 +70,8 @@ def border_radius_mask(size, radius, vert_radius=None):
             continue
         corner = corners_cache.get(r)
         if corner is None:
-            mitmap_index = min(max(*r).bit_length(), len(mask_refs_mitmaps) - 1)
-            mask_ref = mask_refs_mitmaps[mitmap_index]
+            mipmap_index = min(max(*r).bit_length(), len(mask_refs_mipmaps) - 1)
+            mask_ref = mask_refs_mipmaps[mipmap_index]
             corner = mask_ref.resize(r, Image.HAMMING)
             corners_cache[r] = corner
         if transpose is not None:
