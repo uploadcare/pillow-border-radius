@@ -8,6 +8,8 @@ import pytest
 @pytest.mark.parametrize("size, radius, vert_radius", [
     ((60, 40), (10, 12, 14, 16), None),
     ((60, 40), (10, 12, 14, 16), (20,)),
+    ((60, 60), (0, 90), None),
+    ((60, 60), (95, 5), None),
 ])
 def test_referential(size, radius, vert_radius):
     def collect_args(radius):
