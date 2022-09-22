@@ -1,13 +1,19 @@
+from os.path import abspath, dirname, join
+
 from PIL import Image, ImageOps
 
 
 mask_refs_mipmaps = []
 
 
+def resource(*x):
+    return abspath(join(abspath(dirname(__file__)), 'resources', *x))
+
+
 def _init_mipmaps():
     if mask_refs_mipmaps:
         return
-    ref = Image.open('border_radius.2048.png')
+    ref = Image.open(resource('border_radius.2048.png'))
     mask_refs_mipmaps.insert(0, ref)
     while ref.width >= 4:
         ref = ref.resize((ref.width // 2, ref.height // 2), Image.HAMMING)
