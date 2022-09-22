@@ -1,8 +1,8 @@
 import os.path
 
-from border_radius import border_radius_args, border_radius_mask, Image
-
 import pytest
+
+from border_radius import Image, border_radius_args, border_radius_mask
 
 
 @pytest.mark.parametrize("size, radius, vert_radius", [
