@@ -1,11 +1,11 @@
 .PHONY: commit lint install check
 
-xargs=$(if $(shell echo | xargs -r 2>/dev/null && echo 1), xargs -r, xargs)
+XARGS := $(if $(shell echo | xargs -r 2>/dev/null && echo 1), xargs -r, xargs)
+GIT_DIFF := git diff --name-only --cached --diff-filter=dt
 
-GIT_DIFF=git diff --name-only --cached --diff-filter=dt
 commit:
-	${GIT_DIFF} -- '*.py' | $(xargs) isort --check-only --diff
-	${GIT_DIFF} -- '*.py' | $(xargs) flake8
+	${GIT_DIFF} -- '*.py' | ${XARGS} isort --check-only --diff
+	${GIT_DIFF} -- '*.py' | ${XARGS} flake8
 
 lint:
 	isort --check-only --diff ./border_radius ./test_border_radius.py
