@@ -25,7 +25,7 @@ def border_radius_args(size, radius, vert_radius=None):
         vert_radius = radius
 
     def rel_size(dim, radius):
-        if not isinstance(radius, tuple):
+        if not isinstance(radius, (list, tuple)):
             radius = (radius,)
 
         radius = list(radius) + [None] * 3
